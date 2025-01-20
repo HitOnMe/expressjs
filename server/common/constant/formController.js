@@ -1,22 +1,21 @@
 import Service from "../../services/root.service.js";
 import { responseSuccess } from "../helper/success.helper.js";
-import user from "../../models/UserModel.js";
-import Restaurant from "../../models/res.model.js";
+import initModel from "../../models/init.model.js";
 
 const formController = (object, method) => {
     return async (req, res, next) => {
         try {
             // Lựa chọn model dựa trên tham số object
-            const obj = object === 'user' ? user : Restaurant;
-
+            const {likeRes, rateRes, Restaurant, user, order, unlike_res} = initModel();
+            const obj = object === 'user' ? user : 'likeRes'? likeRes: 'rateRes' ? rateRes : 'Restaurant'? Restaurant : 'unlike_res' ? unlike_res : order;
             // Khởi tạo Service với model tương ứng
-            const { getObject, getById, add, update, deleteObject } = Service(obj);
+            const { getById, deleteObject } = Service(obj);
 
             let data = null;
 
             // Kiểm tra phương thức delete
             if (method.includes('delete')) {
-                // Lấy dữ liệu trước khi xóa (nếu cần trả lại dữ liệu đã xóa)
+                // Lấy dữ liệu trước khi xóa 
                 const dataDelete = await getById(req);
                 await deleteObject(req); // Thực hiện xóa
                 data = dataDelete;

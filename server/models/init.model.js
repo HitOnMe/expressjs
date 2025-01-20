@@ -1,31 +1,54 @@
 import sequelize from 'sequelize';
-import _likeRes from './likeRes.model.js';
-import _order from './order.model.js';
-import _rateRes from './rateRes.model.js';
-import _res from './res.model.js';
-import _user from './user.model.js';
-const DataTypes = sequelize.DataTypes;
+import user from './user.model.js';
+import Restaurant from './res.model.js';
+import order from './order.model.js';
+import likeRes from './likeRes.model.js';
+import unlike_res from './unlike.model.js';
+import rateRes from './rateRes.model.js';
 
-const initModel = (sequelize) => {
-    const likeRes = _likeRes.init(sequelize, DataTypes);
-    const rateRes = _rateRes.init(sequelize, DataTypes);
-    const res = _res.init(sequelize, DataTypes)
-    const user = _user.init(sequelize, DataTypes)
-    const order = _order.init(sequelize, DataTypes);
-    likeRes.belongsTo(user, {as: 'resLikeUser', foreignKey: 'user_id'});
-    user.hasMany(likeRes, {as : 'userLikeRes', foreignKey: 'likeResId'});
-    rateRes.belongsTo(user, {as: 'rateResUser', foreignKey: 'likeRes_id'});
-    user.hasMany(rateRes, {as : 'userRateRes', foreignKey: 'likeResId'});
-    order.belongsTo(user, {as: 'userOrder', foreignKey: 'UserId'});
-    user.hasMany(order, {as : 'orderUser', foreignKey: 'likeResId'});
-    rateRes.belongsTo(res, {as : 'resRateRes', foreignKey: 'rateRes_id'});
-    likeRes.belongsTo(res, {as: 'resLikeRes', foreignKey: 'res_id'});
+
+
+
+const syncModel = async(...models) => {
+   try {
+    await Promise.all(
+        models.map(model => model.sync()));
+        console.log("đồng bộ hóa success")
+   } catch(error) {
+       console.log(error);
+   }
+}
+
+const initModel = () => {
+    
+    likeRes.belongsTo(user, {foreignKey: 'user_id', targetKey: 'user_id'});
+    user.hasMany(likeRes, {foreignKey: 'user_id'});
+
+    unlike_res.belongsTo(user, {foreignKey: 'user_id', targetKey: 'user_id'});
+    user.hasMany(unlike_res, {foreignKey: 'user_id'});
+
+    rateRes.belongsTo(user,{foreignKey: 'user_id', targetKey: 'user_id'});
+    user.hasMany(rateRes,{foreignKey: 'user_id'});
+
+    order.belongsTo(user,{foreignKey: 'user_id', targetKey: 'user_id'});
+    user.hasMany(order,{foreignKey: 'user_id'});
+
+    rateRes.belongsTo(Restaurant,{foreignKey: 'res_id', targetKey: 'res_id'});
+    likeRes.belongsTo(Restaurant,{foreignKey: 'res_id', targetKey: 'res_id'});
+    
+    Restaurant.hasMany(rateRes, { foreignKey: 'res_id' });
+    Restaurant.hasMany(likeRes, { foreignKey: 'res_id' });
+
+    unlike_res.belongsTo(Restaurant,{foreignKey: 'res_id', targetKey: 'res_id'});
+    Restaurant.hasMany(unlike_res, { foreignKey: 'res_id' });
     return {
         likeRes,
         rateRes,
-        res,
+        Restaurant,
         user,
-        order
-    }
+        order,
+        unlike_res
+    };
 };
-export default initModel
+
+export default initModel;
