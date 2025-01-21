@@ -1,4 +1,3 @@
-import sequelize from 'sequelize';
 import user from './user.model.js';
 import Restaurant from './res.model.js';
 import order from './order.model.js';
@@ -7,17 +6,6 @@ import unlike_res from './unlike.model.js';
 import rateRes from './rateRes.model.js';
 
 
-
-
-const syncModel = async(...models) => {
-   try {
-    await Promise.all(
-        models.map(model => model.sync()));
-        console.log("đồng bộ hóa success")
-   } catch(error) {
-       console.log(error);
-   }
-}
 
 const initModel = () => {
     

@@ -8,5 +8,6 @@ const formRooter = (object) => {
     rooter.put(`${object}/:id`, rootController(object,'update'));
     rooter.patch(`${object}/:id`, rootController(object,'update'));
     rooter.delete(`${object}/:id`, rootController(object,'deleteObject'));
+    return rooter
 }
 export default formRooter
